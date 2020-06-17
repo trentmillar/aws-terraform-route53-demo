@@ -80,3 +80,30 @@ resource aws_security_group a {
 
   tags = merge(local.tags, map("Name", "r53-demo-sg"))
 }
+
+data aws_ami a {
+  provider = aws.a
+
+  most_recent = true
+  name_regex  = "^aws-elasticbeanstalk-amzn-.+-ecs-hvm-.+$"
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["aws-elasticbeanstalk-amzn-*"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+output ami_id {
+  value =  data.aws_ami.a.id
+}
