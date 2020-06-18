@@ -10,6 +10,17 @@ locals {
       cidr = cidrsubnet(local.a.cidr, 2, 1)
     }
   }
+
+  a_context = {
+    region = data.aws_region.a.name
+    web01  = aws_instance.web01_a.public_ip
+    web02  = aws_instance.web02_a.public_ip
+    db     = aws_instance.db.public_ip
+  }
+}
+
+data aws_region a {
+  provider = aws.a
 }
 
 resource aws_vpc a {
@@ -114,12 +125,13 @@ resource aws_key_pair a {
 resource aws_instance web01_a {
   provider = aws.a
 
-  ami                    = data.aws_ami.a.id
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.a.id]
-  subnet_id              = aws_subnet.a_a.id
-  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 0), 10)
-  key_name               = aws_key_pair.a.key_name
+  ami                         = data.aws_ami.a.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.a.id]
+  subnet_id                   = aws_subnet.a_a.id
+  private_ip                  = cidrhost(cidrsubnet(local.a.cidr, 2, 0), 10)
+  key_name                    = aws_key_pair.a.key_name
+  associate_public_ip_address = true
 
   tags = merge(local.tags, map("Name", "web1-east"))
 }
@@ -127,12 +139,13 @@ resource aws_instance web01_a {
 resource aws_instance web02_a {
   provider = aws.a
 
-  ami                    = data.aws_ami.a.id
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.a.id]
-  subnet_id              = aws_subnet.a_b.id
-  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 20)
-  key_name               = aws_key_pair.a.key_name
+  ami                         = data.aws_ami.a.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.a.id]
+  subnet_id                   = aws_subnet.a_b.id
+  private_ip                  = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 20)
+  key_name                    = aws_key_pair.a.key_name
+  associate_public_ip_address = true
 
   tags = merge(local.tags, map("Name", "web2-east"))
 }
@@ -140,13 +153,13 @@ resource aws_instance web02_a {
 resource aws_instance db {
   provider = aws.a
 
-  ami                    = data.aws_ami.a.id
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.a.id]
-  subnet_id              = aws_subnet.a_b.id
-  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 100)
-  key_name               = aws_key_pair.a.key_name
+  ami                         = data.aws_ami.a.id
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.a.id]
+  subnet_id                   = aws_subnet.a_b.id
+  private_ip                  = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 100)
+  key_name                    = aws_key_pair.a.key_name
+  associate_public_ip_address = true
 
   tags = merge(local.tags, map("Name", "db-east"))
 }
-
