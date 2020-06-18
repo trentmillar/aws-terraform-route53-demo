@@ -68,25 +68,45 @@ resource aws_route_table a {
   tags = merge(local.tags, map("Name", "r53-demo-rt"))
 }
 
+resource aws_route_table_association a_a {
+  provider = aws.a
+
+  subnet_id      = aws_subnet.a_a.id
+  route_table_id = aws_route_table.a.id
+}
+
+resource aws_route_table_association a_b {
+  provider = aws.a
+
+  subnet_id      = aws_subnet.a_b.id
+  route_table_id = aws_route_table.a.id
+}
+
 resource aws_security_group a {
   provider = aws.a
 
   vpc_id = aws_vpc.a.id
 
   ingress {
-    description = "All HTTP"
+    description = "HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/8"]
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "96.51.130.136/32"
+    ]
   }
 
   ingress {
-    description = "My IP"
+    description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["96.51.130.136/32"]
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "96.51.130.136/32"
+    ]
   }
 
   egress {
