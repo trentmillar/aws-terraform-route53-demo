@@ -89,6 +89,13 @@ resource aws_security_group a {
     cidr_blocks = ["96.51.130.136/32"]
   }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = merge(local.tags, map("Name", "r53-demo-sg"))
 }
 
