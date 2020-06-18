@@ -1,15 +1,17 @@
 provider aws {
-  region = "us-west-2"
+  region = "us-east-2"
   alias  = "a"
 }
 
 provider aws {
-  region = "us-east-2"
+  region = "us-west-2"
   alias  = "b"
 }
 
 locals {
-    tags = {
+  key_path = "./key/key.pub"
 
-    }
+  tags = {
+
+  }
 }

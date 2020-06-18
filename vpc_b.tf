@@ -103,3 +103,36 @@ data aws_ami b {
     values = ["hvm"]
   }
 }
+
+resource aws_key_pair b {
+  provider = aws.b
+
+  key_name   = "r53-key"
+  public_key = file(local.key_path)
+}
+
+resource aws_instance web01_b {
+  provider = aws.b
+
+  ami                    = data.aws_ami.b.id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.b.id]
+  subnet_id              = aws_subnet.b_a.id
+  private_ip             = cidrhost(cidrsubnet(local.b.cidr, 2, 0), 10)
+  key_name               = aws_key_pair.b.key_name
+
+  tags = merge(local.tags, map("Name", "web1-west"))
+}
+
+resource aws_instance web02_b {
+  provider = aws.b
+
+  ami                    = data.aws_ami.b.id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.b.id]
+  subnet_id              = aws_subnet.b_b.id
+  private_ip             = cidrhost(cidrsubnet(local.b.cidr, 2, 1), 20)
+  key_name               = aws_key_pair.b.key_name
+
+  tags = merge(local.tags, map("Name", "web2-west"))
+}

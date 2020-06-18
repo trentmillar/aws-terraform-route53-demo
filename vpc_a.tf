@@ -104,6 +104,49 @@ data aws_ami a {
   }
 }
 
-output ami_id {
-  value =  data.aws_ami.a.id
+resource aws_key_pair a {
+  provider = aws.a
+
+  key_name   = "r53-key"
+  public_key = file(local.key_path)
 }
+
+resource aws_instance web01_a {
+  provider = aws.a
+
+  ami                    = data.aws_ami.a.id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.a.id]
+  subnet_id              = aws_subnet.a_a.id
+  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 0), 10)
+  key_name               = aws_key_pair.a.key_name
+
+  tags = merge(local.tags, map("Name", "web1-east"))
+}
+
+resource aws_instance web02_a {
+  provider = aws.a
+
+  ami                    = data.aws_ami.a.id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.a.id]
+  subnet_id              = aws_subnet.a_b.id
+  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 20)
+  key_name               = aws_key_pair.a.key_name
+
+  tags = merge(local.tags, map("Name", "web2-east"))
+}
+
+resource aws_instance db {
+  provider = aws.a
+
+  ami                    = data.aws_ami.a.id
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.a.id]
+  subnet_id              = aws_subnet.a_b.id
+  private_ip             = cidrhost(cidrsubnet(local.a.cidr, 2, 1), 100)
+  key_name               = aws_key_pair.a.key_name
+
+  tags = merge(local.tags, map("Name", "db-east"))
+}
+
